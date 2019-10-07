@@ -25,7 +25,8 @@ x_hat = [0; 0; .9344; 0; 0.5455];
 
 x_hat = zeros(n,1);
 Lip = norm(A)^2;
-% 206 are required
+% 206 are required for basic subproblem
+% 199 are required for all inds dome subproblem
 for i=1:250
     x_hat = max(0, x_hat - 1/Lip*A'*(A*x_hat-b));
 end
@@ -65,7 +66,12 @@ gap = p_hat - d_hat
 
 L = 1; % Lip constant of f(x) = 0.5*norm(x-b)^2; Lip(grad_f) = 1
 
+% Use the basic SAFE feature elimination problem eqn. (10)
 lower_bounds = feat_elim_dual_strong_concavity(A, nu_hat, L, gap)
+
+% Or use the "all inds dome subproblem" eqn. (20)
+%lower_bounds = NNLS_all_inds_dome_subproblem_mex(A, nu_hat, L*gap);
+
 zero_inds = lower_bounds > 1e-14
 
 % It's overdetermined
@@ -74,7 +80,11 @@ A_red = A(:,~zero_inds);
 % It's full rank
 s = svd(A_red)
 
-fprintf('NNLS solution is unique!\n');
+if sum(zero_inds) >= n - m
+    fprintf('NNLS solution is unique!\n');
+else
+    fprintf('Can''t conclude uniqueness\n');
+end
 
 
 dist2_bound = 2/s(end)^2*gap;

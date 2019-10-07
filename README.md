@@ -18,6 +18,12 @@ and the basic feature elimination subproblem (10) via
 lower_bounds = feat_elim_dual_strong_concavity(A, nu_hat, L, gap);
 ```
 
+You can use the "all inds dome subproblem" (once compiled; see below) via
+```
+lower_bounds = NNLS_all_inds_dome_subproblem_mex(A, nu_hat, L*gap);
+```
+
+
 ## Certifying Uniqueness
 To recreate Figure 4 of our paper, you'll need the following:
  * `quadprog` from the optimization toolbox
